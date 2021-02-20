@@ -16,24 +16,33 @@ type WordRepo struct {
 var databaseFile string = config.RootDirectory + "../../../../database/words.json"
 var wordFileMutex sync.Mutex
 
+func (w *WordRepo) openDB() ([]Word, error) {
+	var dataWords []Word
+	data, err := ioutil.ReadFile(databaseFile)
+	if err != nil {
+		return dataWords, err
+	}
+	err = json.Unmarshal(data, &dataWords)
+	if err != nil {
+		return dataWords, err
+	}
+
+	return dataWords, nil
+}
+
 func (w *WordRepo) SyncGet(words []string) ([]uint, error) {
 	var r []uint
-	var dataWords []Word
 
 	wordFileMutex.Lock()
 	defer wordFileMutex.Unlock()
 
-	data, err := ioutil.ReadFile(databaseFile)
-	if err != nil {
-		return r, err
-	}
-	json.Unmarshal(data, dataWords)
+	dataWords, err := w.openDB()
 
 	var unsyncedWords []string
 	var unsyncedWordIDs []int
 
 	wordsLen := len(words)
-	lastID := len(dataWords)
+	wordsDbLen := len(dataWords)
 
 	returnIDs := make([]uint, wordsLen)
 	for idx, w := range words {
@@ -52,7 +61,7 @@ func (w *WordRepo) SyncGet(words []string) ([]uint, error) {
 
 	t := time.Now()
 	tString := t.Format(time_pkg.TIME_DB)
-	currentID := lastID
+	currentID := wordsDbLen
 	for idx, uWord := range unsyncedWords {
 		unsyncedWordID := unsyncedWordIDs[idx]
 		currentID = currentID + 1

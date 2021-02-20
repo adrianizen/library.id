@@ -8,7 +8,7 @@ import (
 )
 
 func TestSyncGet(t *testing.T) {
-	testString := "Jakarta_Bandung"
+	testString := "Jakarta_Bandung_Port"
 	wordRepo := word_repo.WordRepo{}
 
 	splitString := strings.Split(testString, "_")
