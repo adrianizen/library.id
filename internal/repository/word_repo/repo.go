@@ -13,10 +13,11 @@ import (
 type WordRepo struct {
 }
 
-var databaseFile string = config.RootDirectory + "../../../../database/words.json"
 var wordFileMutex sync.Mutex
 
 func (w *WordRepo) openDB() ([]Word, error) {
+	var databaseFile string = config.RootDirectory + "/database/words.json"
+
 	var dataWords []Word
 	data, err := ioutil.ReadFile(databaseFile)
 	if err != nil {
@@ -31,6 +32,7 @@ func (w *WordRepo) openDB() ([]Word, error) {
 }
 
 func (w *WordRepo) SyncGet(words []string) ([]uint, error) {
+	var databaseFile string = config.RootDirectory + "/database/words.json"
 	var r []uint
 
 	wordFileMutex.Lock()
@@ -89,4 +91,29 @@ func (w *WordRepo) SyncGet(words []string) ([]uint, error) {
 	defer f.Close()
 
 	return returnIDs, nil
+}
+
+func (w *WordRepo) GetByIDs(ids []uint) ([]Word, error) {
+	var databaseFile string = config.RootDirectory + "/database/words.json"
+
+	var dataWords []Word
+	var returnWords []Word
+	data, err := ioutil.ReadFile(databaseFile)
+	if err != nil {
+		return dataWords, err
+	}
+	err = json.Unmarshal(data, &dataWords)
+	if err != nil {
+		return dataWords, err
+	}
+
+	for _, id := range ids {
+		for _, w := range dataWords {
+			if w.ID == id {
+				returnWords = append(returnWords, w)
+			}
+		}
+	}
+
+	return returnWords, nil
 }

@@ -13,12 +13,10 @@ import (
 type KeypairRepo struct {
 }
 
-var databaseFile string = config.RootDirectory + "../../../../database/keypair.json"
-var logFile string = config.RootDirectory + "../../../../database/keypair_log.json"
-
 var keypairFileMutex sync.Mutex
 
 func (w *KeypairRepo) openDB() ([]Keypair, error) {
+	var databaseFile string = config.RootDirectory + "/database/keypair.json"
 	var dataKeypair []Keypair
 	data, err := ioutil.ReadFile(databaseFile)
 	if err != nil {
@@ -33,6 +31,7 @@ func (w *KeypairRepo) openDB() ([]Keypair, error) {
 }
 
 func (w *KeypairRepo) openLogDB() ([]KeypairLog, error) {
+	var logFile string = config.RootDirectory + "/database/keypair_log.json"
 	var dataKeypairLogs []KeypairLog
 	data, err := ioutil.ReadFile(logFile)
 	if err != nil {
@@ -47,6 +46,7 @@ func (w *KeypairRepo) openLogDB() ([]KeypairLog, error) {
 }
 
 func (w *KeypairRepo) addLog(keyPairID uint, value string) error {
+	var logFile string = config.RootDirectory + "/database/keypair_log.json"
 	dataLogs, err := w.openLogDB()
 	if err != nil {
 		return err
@@ -82,6 +82,7 @@ func (w *KeypairRepo) addLog(keyPairID uint, value string) error {
 }
 
 func (w *KeypairRepo) Upsert(key string, value string) (uint, error) {
+	var databaseFile string = config.RootDirectory + "/database/keypair.json"
 	keypairFileMutex.Lock()
 	defer keypairFileMutex.Unlock()
 	dataKeypair, err := w.openDB()
@@ -146,4 +147,30 @@ func (w *KeypairRepo) Upsert(key string, value string) (uint, error) {
 	}
 
 	return uint(insertedID), nil
+}
+
+func (w *KeypairRepo) GetList() ([]Keypair, error) {
+	var dataKeypair []Keypair
+	dataKeypair, err := w.openDB()
+	if err != nil {
+		return dataKeypair, err
+	}
+
+	return dataKeypair, nil
+}
+
+func (w *KeypairRepo) GetLogList(keyPairID uint) ([]KeypairLog, error) {
+	var keypairReturn []KeypairLog
+	dataKeypair, err := w.openLogDB()
+	if err != nil {
+		return dataKeypair, err
+	}
+
+	for _, k := range dataKeypair {
+		if k.KeypairID == keyPairID {
+			keypairReturn = append(keypairReturn, k)
+		}
+	}
+
+	return keypairReturn, nil
 }

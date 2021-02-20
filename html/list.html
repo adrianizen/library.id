@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Library.id</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <main>
+      <h3> Library List </h3>
+      <table id="library">
+        <tr>
+          <td>Keypair</td>
+          <td>Price</td>
+        </tr>
+        {{range .}}
+        <tr>
+          
+          <td>{{.Key}}</td>
+          <td>{{.Value}}</td>
+          
+
+        </tr>
+        {{end}}
+      </table>
+  </body>
+</html>

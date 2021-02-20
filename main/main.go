@@ -1,7 +1,7 @@
 package main
 
 import (
-	"html/template"
+	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -11,16 +11,11 @@ import (
 	"adrianizen/library.id/internal/service"
 )
 
-var tpl = template.Must(template.ParseFiles("index.html"))
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	tpl.Execute(w, nil)
-}
-
 func main() {
 	_, filename, _, _ := runtime.Caller(0)
 	dir := path.Join(path.Dir(filename), "..")
 
+	fmt.Println(dir)
 	config.RootDirectory = dir
 
 	port := os.Getenv("PORT")
@@ -32,7 +27,9 @@ func main() {
 	mux := http.NewServeMux()
 	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
 
-	mux.HandleFunc("/", indexHandler)
-	mux.HandleFunc("/upsert-data", service.UpsertHandler)
+	mux.HandleFunc("/", service.IndexUIHandler)
+	mux.HandleFunc("/list", service.ListUIHandler)
+	mux.HandleFunc("/upsert-form", service.UpsertUIHandler)
+	mux.HandleFunc("/upsert-handle", service.UpsertHandler)
 	http.ListenAndServe(":"+port, mux)
 }

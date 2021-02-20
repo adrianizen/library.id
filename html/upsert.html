@@ -11,11 +11,14 @@
     <main>
       <header>
         <a class="logo" href="/">Test</a>
-        <form action="/search" method="GET">
-          <input autofocus class="search-input" value="" placeholder="Enter a news topic" type="search" name="q" />
+        <form action="/upsert-handle" method="POST">
+          <input autofocus class="search-input" value="" placeholder="Enter a key string with _" type="search" name="keypair" />
+          <input class="search-input" value="" placeholder="Enter Price" type="search" name="value" />
+
+          <hr>
+          <button type="submit" >Submit</button>
         </form>
         
-        <a href="https://github.com/freshman-tech/news" class="button github-button"> View on GitHub</a>
       </header>
     </main>
   </body>
